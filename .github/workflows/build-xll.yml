@@ -2,7 +2,7 @@
 
 # Manually-triggered build of the QuantLibXL Excel add-in (.xll) as a
 # static-CRT Release for both x64 and Win32 (x86).  Runs on the GitHub-hosted
-# windows-2022 runner (Visual Studio 2022, toolset v143) and uploads each
+# windows-latest runner (Visual Studio 2026, toolset v145) and uploads each
 # XLL as a build artifact.
 #
 # QuantLib is not committed to this repository (it is .gitignore'd), so it is
@@ -20,20 +20,19 @@ on:
         required: true
         default: "master"
       boost_version:
-        description: "Boost version to build (dotted, e.g. 1.83.0)"
+        description: "Boost version to build (dotted, e.g. 1.89.0). Must be new enough for the VS 2026 / v145 toolset."
         required: true
-        default: "1.83.0"
+        default: "1.89.0"
 
 permissions:
   contents: read
 
 jobs:
   build-xll:
-    # windows-latest now maps to the windows-2025-vs2026 image (Visual Studio
-    # 2026 / v145).  Boost 1.83's bootstrap.bat does not recognise the v145
-    # toolset ("Unknown toolset: vcunk"; it supports up to vc143), so pin to
-    # the VS 2022 image to get the intended v143 toolchain.
-    runs-on: windows-2022
+    # windows-latest maps to the windows-2025-vs2026 image (Visual Studio 2026
+    # / v145).  The Boost version below must be recent enough for its
+    # bootstrap.bat/b2 to recognise the v145 toolset.
+    runs-on: windows-latest
 
     strategy:
       fail-fast: false
@@ -43,16 +42,16 @@ jobs:
             address_model: "64"
             vcvars_arch: amd64
             boost_stage: stage
-            xll_name: QuantLibXL-v143-x64-mt-s-1_42_0.xll
+            xll_name: QuantLibXL-v145-x64-mt-s-1_42_0.xll
           - arch: Win32
             address_model: "32"
             vcvars_arch: x86
             boost_stage: stage32
-            xll_name: QuantLibXL-v143-mt-s-1_42_0.xll
+            xll_name: QuantLibXL-v145-mt-s-1_42_0.xll
 
     env:
       BOOST_ROOT_DIR: ${{ github.workspace }}\boost
-      BUILD_DIR: ${{ github.workspace }}\build\ci-vs2022-${{ matrix.arch }}-static
+      BUILD_DIR: ${{ github.workspace }}\build\ci-vs2026-${{ matrix.arch }}-static
 
     steps:
       - name: Checkout QuantLibAddin
@@ -96,7 +95,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.BOOST_ROOT_DIR }}
-          key: boost-${{ steps.boost.outputs.version }}-${{ matrix.arch }}-vc143-static-v1
+          key: boost-${{ steps.boost.outputs.version }}-${{ matrix.arch }}-vc145-static-v1
 
       - name: Build Boost (${{ matrix.arch }})
         if: steps.boost-cache.outputs.cache-hit != 'true'
@@ -118,7 +117,7 @@ jobs:
           cd /d "%BOOST_DIR%"
           call bootstrap.bat || exit /b 1
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
-              toolset=msvc-14.3 ^
+              toolset=msvc ^
               address-model=${{ matrix.address_model }} ^
               architecture=x86 ^
               link=static runtime-link=static threading=multi variant=release ^
@@ -127,11 +126,11 @@ jobs:
               --with-thread --with-date_time --with-chrono --with-atomic ^
               stage || exit /b 1
 
-      - name: Configure (CMake, VS 2022 ${{ matrix.arch }}, static Release)
+      - name: Configure (CMake, VS 2026 ${{ matrix.arch }}, static Release)
         shell: cmd
         run: |
           cmake -S "%GITHUB_WORKSPACE%" -B "%BUILD_DIR%" ^
-              -G "Visual Studio 17 2022" -A ${{ matrix.arch }} ^
+              -G "Visual Studio 18 2026" -A ${{ matrix.arch }} ^
               -DRUN_GENSRC=ON ^
               -DMSVC_LINK_DYNAMIC_RUNTIME=OFF ^
               -DBoost_USE_STATIC_RUNTIME=ON ^
