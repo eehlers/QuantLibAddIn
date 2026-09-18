@@ -140,18 +140,21 @@ jobs:
           rem Passing "msvc" forces it to use cl.exe from the vcvarsall
           rem environment directly to build the b2 engine.
           call bootstrap.bat msvc || exit /b 1
-          rem b2's own msvc auto-detection also fails to recognise v145 and
-          rem silently falls back to a bogus "msvc-6.0" toolset (libraries get
-          rem skipped "for lack of msvc-setup"). Pin the compiler explicitly by
-          rem pointing a user-config.jam at the cl.exe already on PATH.
+          rem b2's own msvc auto-detection fails to recognise v145 and silently
+          rem falls back to a bogus "msvc-6.0" toolset. Pointing it directly at
+          rem cl.exe gets the right compiler, but version "14.5" is not in b2
+          rem 1.89's known-version list, so it cannot generate the compiler
+          rem "setup" target and skips every object ("for lack of msvc-setup").
+          rem Register the compiler under the known version 14.3 (whose config
+          rem logic is compatible) while pointing it at the real v145 cl.exe.
           for /f "delims=" %%i in ('where cl 2^>nul') do if not defined CL_EXE set "CL_EXE=%%i"
           if not defined CL_EXE ( echo Could not locate cl.exe on PATH & exit /b 1 )
           set "CL_JAM=!CL_EXE:\=/!"
           echo Using cl.exe at "!CL_EXE!"
-          > user-config.jam echo using msvc : 14.5 : "!CL_JAM!" ;
+          > user-config.jam echo using msvc : 14.3 : "!CL_JAM!" ;
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
               --user-config="%BOOST_DIR%\user-config.jam" ^
-              toolset=msvc-14.5 ^
+              toolset=msvc-14.3 ^
               address-model=${{ matrix.address_model }} ^
               architecture=x86 ^
               link=static runtime-link=static threading=multi variant=release ^
