@@ -138,10 +138,20 @@ jobs:
           rem Boost's bootstrap engine builder only auto-detects up to vc143 and
           rem reports "Unknown toolset: vcunk" for the VS 2026 (v145) compiler.
           rem Passing "msvc" forces it to use cl.exe from the vcvarsall
-          rem environment directly, and b2 toolset=msvc then auto-detects v145.
+          rem environment directly to build the b2 engine.
           call bootstrap.bat msvc || exit /b 1
+          rem b2's own msvc auto-detection also fails to recognise v145 and
+          rem silently falls back to a bogus "msvc-6.0" toolset (libraries get
+          rem skipped "for lack of msvc-setup"). Pin the compiler explicitly by
+          rem pointing a user-config.jam at the cl.exe already on PATH.
+          for /f "delims=" %%i in ('where cl 2^>nul') do if not defined CL_EXE set "CL_EXE=%%i"
+          if not defined CL_EXE ( echo Could not locate cl.exe on PATH & exit /b 1 )
+          set "CL_JAM=!CL_EXE:\=/!"
+          echo Using cl.exe at "!CL_EXE!"
+          > user-config.jam echo using msvc : 14.5 : "!CL_JAM!" ;
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
-              toolset=msvc ^
+              --user-config="%BOOST_DIR%\user-config.jam" ^
+              toolset=msvc-14.5 ^
               address-model=${{ matrix.address_model }} ^
               architecture=x86 ^
               link=static runtime-link=static threading=multi variant=release ^
