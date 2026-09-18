@@ -135,7 +135,11 @@ jobs:
           echo Using Visual Studio at "!VSINSTALL!"
           call "!VSINSTALL!\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvars_arch }} || exit /b 1
           cd /d "%BOOST_DIR%"
-          call bootstrap.bat || exit /b 1
+          rem Boost's bootstrap engine builder only auto-detects up to vc143 and
+          rem reports "Unknown toolset: vcunk" for the VS 2026 (v145) compiler.
+          rem Passing "msvc" forces it to use cl.exe from the vcvarsall
+          rem environment directly, and b2 toolset=msvc then auto-detects v145.
+          call bootstrap.bat msvc || exit /b 1
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
               toolset=msvc ^
               address-model=${{ matrix.address_model }} ^
