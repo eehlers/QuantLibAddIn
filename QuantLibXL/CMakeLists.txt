@@ -361,8 +361,11 @@ target_link_libraries(QuantLibXL PRIVATE
     advapi32
 )
 
-# Suppress safe-exception-handler warning for x64 (no /SAFESEH on x64)
-if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+# The Excel SDK import library (xlcall32.lib) has no SafeSEH metadata, which
+# breaks the default SafeSEH-enabled link on x86 (LNK2026 "module unsafe for
+# SAFESEH image" / LNK1281).  SafeSEH is a 32-bit-only concept, so disable it
+# for Win32 builds; on x64 there is no SafeSEH and the flag is unnecessary.
+if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     target_link_options(QuantLibXL PRIVATE /SAFESEH:NO)
 endif()
 
