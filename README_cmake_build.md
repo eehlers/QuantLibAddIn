@@ -453,7 +453,7 @@ uploads each XLL as a build artifact.
 | Trigger | `workflow_dispatch` (manual) only |
 | Runner | `windows-latest` (Visual Studio 2026, toolset **v145**) |
 | Variants | static-CRT Release, `x64` and `Win32` (matrix) |
-| Inputs | `quantlib_ref` (default `master`), `boost_version` (default `1.89.0`) |
+| Inputs | `quantlib_ref` (default `master`), `boost_version` (default `1.89.0`), `arch` (`both`/`x64`/`Win32`, default `both`) |
 | Output | artifacts `QuantLibXL-x64` and `QuantLibXL-Win32` |
 
 The runner uses VS 2026, so the CI XLLs are tagged `v145`
