@@ -106,7 +106,11 @@ jobs:
           curl -L -o boost.7z https://archives.boost.io/release/%BOOST_V%/source/boost_%BOOST_U%.7z || exit /b 1
           7z x boost.7z -o"%GITHUB_WORKSPACE%" >nul || exit /b 1
           move "%GITHUB_WORKSPACE%\boost_%BOOST_U%" "%BOOST_DIR%" || exit /b 1
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvars_arch }} || exit /b 1
+          set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          for /f "usebackq tokens=*" %%i in (`"!VSWHERE!" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
+          if not defined VSINSTALL ( echo Could not locate Visual Studio via vswhere & exit /b 1 )
+          echo Using Visual Studio at "!VSINSTALL!"
+          call "!VSINSTALL!\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvars_arch }} || exit /b 1
           cd /d "%BOOST_DIR%"
           call bootstrap.bat || exit /b 1
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
