@@ -37,30 +37,37 @@ permissions:
   contents: read
 
 jobs:
+  setup:
+    # Build the matrix from the `arch` input so we can run only x64, only
+    # Win32, or both.  (A job-level `if` cannot reference `matrix`, so the leg
+    # selection must happen here.)
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - name: Compute build matrix
+        id: set
+        shell: bash
+        run: |
+          x64='{"arch":"x64","address_model":"64","vcvars_arch":"amd64","boost_stage":"stage","xll_name":"QuantLibXL-v145-x64-mt-s-1_42_0.xll"}'
+          win32='{"arch":"Win32","address_model":"32","vcvars_arch":"x86","boost_stage":"stage32","xll_name":"QuantLibXL-v145-mt-s-1_42_0.xll"}'
+          case "${{ inputs.arch }}" in
+            x64)   include="[$x64]" ;;
+            Win32) include="[$win32]" ;;
+            *)     include="[$x64,$win32]" ;;
+          esac
+          echo "matrix={\"include\":$include}" >> "$GITHUB_OUTPUT"
+
   build-xll:
+    needs: setup
     # windows-latest maps to the windows-2025-vs2026 image (Visual Studio 2026
     # / v145).  The Boost version below must be recent enough for its
     # bootstrap.bat/b2 to recognise the v145 toolset.
     runs-on: windows-latest
 
-    # A job-level `if` on a matrix job is evaluated per matrix leg, so this
-    # skips the leg whose arch was not requested ("both" runs both legs).
-    if: ${{ inputs.arch == 'both' || inputs.arch == matrix.arch }}
-
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - arch: x64
-            address_model: "64"
-            vcvars_arch: amd64
-            boost_stage: stage
-            xll_name: QuantLibXL-v145-x64-mt-s-1_42_0.xll
-          - arch: Win32
-            address_model: "32"
-            vcvars_arch: x86
-            boost_stage: stage32
-            xll_name: QuantLibXL-v145-mt-s-1_42_0.xll
+      matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
 
     env:
       BOOST_ROOT_DIR: ${{ github.workspace }}\boost
