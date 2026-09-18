@@ -140,18 +140,20 @@ jobs:
           rem Passing "msvc" forces it to use cl.exe from the vcvarsall
           rem environment directly to build the b2 engine.
           call bootstrap.bat msvc || exit /b 1
-          rem b2's own msvc auto-detection fails to recognise v145 and silently
-          rem falls back to a bogus "msvc-6.0" toolset. Pointing it directly at
-          rem cl.exe gets the right compiler, but version "14.5" is not in b2
-          rem 1.89's known-version list, so it cannot generate the compiler
-          rem "setup" target and skips every object ("for lack of msvc-setup").
-          rem Register the compiler under the known version 14.3 (whose config
-          rem logic is compatible) while pointing it at the real v145 cl.exe.
+          rem b2 1.89 does not know the VS 2026 layout, so it can neither detect
+          rem the compiler (falls back to a bogus "msvc-6.0") nor generate the
+          rem compiler "setup" target (skips every object "for lack of
+          rem msvc-setup"). Register the toolset explicitly under the known
+          rem version 14.3, pointing both at the real v145 cl.exe AND at the
+          rem vcvarsall.bat we located with vswhere as the <setup> script.
           for /f "delims=" %%i in ('where cl 2^>nul') do if not defined CL_EXE set "CL_EXE=%%i"
           if not defined CL_EXE ( echo Could not locate cl.exe on PATH & exit /b 1 )
           set "CL_JAM=!CL_EXE:\=/!"
+          set "VCVARS=!VSINSTALL!\VC\Auxiliary\Build\vcvarsall.bat"
+          set "VCVARS_JAM=!VCVARS:\=/!"
           echo Using cl.exe at "!CL_EXE!"
-          > user-config.jam echo using msvc : 14.3 : "!CL_JAM!" ;
+          echo Using vcvarsall at "!VCVARS!"
+          > user-config.jam echo using msvc : 14.3 : "!CL_JAM!" : ^<setup^>"!VCVARS_JAM!" ^<setup-options^>${{ matrix.vcvars_arch }} ;
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
               --user-config="%BOOST_DIR%\user-config.jam" ^
               toolset=msvc-14.3 ^
