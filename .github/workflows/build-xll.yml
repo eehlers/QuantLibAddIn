@@ -1,8 +1,8 @@
 ﻿name: Build QuantLibXL XLL
 
 # Manually-triggered build of the QuantLibXL Excel add-in (.xll) as a
-# static-CRT Release for both x64 and Win32 (x86).  Runs on GitHub-hosted
-# windows-latest runners (Visual Studio 2022, toolset v143) and uploads each
+# static-CRT Release for both x64 and Win32 (x86).  Runs on the GitHub-hosted
+# windows-2022 runner (Visual Studio 2022, toolset v143) and uploads each
 # XLL as a build artifact.
 #
 # QuantLib is not committed to this repository (it is .gitignore'd), so it is
@@ -29,7 +29,11 @@ permissions:
 
 jobs:
   build-xll:
-    runs-on: windows-latest
+    # windows-latest now maps to the windows-2025-vs2026 image (Visual Studio
+    # 2026 / v145).  Boost 1.83's bootstrap.bat does not recognise the v145
+    # toolset ("Unknown toolset: vcunk"; it supports up to vc143), so pin to
+    # the VS 2022 image to get the intended v143 toolchain.
+    runs-on: windows-2022
 
     strategy:
       fail-fast: false

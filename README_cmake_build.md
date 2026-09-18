@@ -445,13 +445,13 @@ A per-project `doxywarnings.txt` is written next to each `html` directory.
 ## 11  Continuous integration (GitHub Actions)
 
 The workflow `.github/workflows/build-xll.yml` builds the **static-CRT Release**
-XLL for **both x64 and Win32** on a GitHub-hosted `windows-latest` runner and
+XLL for **both x64 and Win32** on a GitHub-hosted `windows-2022` runner and
 uploads each XLL as a build artifact.
 
 | Property | Value |
 |----------|-------|
 | Trigger | `workflow_dispatch` (manual) only |
-| Runner | `windows-latest` (Visual Studio 2022, toolset **v143**) |
+| Runner | `windows-2022` (Visual Studio 2022, toolset **v143**) |
 | Variants | static-CRT Release, `x64` and `Win32` (matrix) |
 | Inputs | `quantlib_ref` (default `master`), `boost_version` (default `1.83.0`) |
 | Output | artifacts `QuantLibXL-x64` and `QuantLibXL-Win32` |
@@ -459,6 +459,12 @@ uploads each XLL as a build artifact.
 Because the runner uses VS 2022, the CI XLLs are tagged `v143`
 (`QuantLibXL-v143-x64-mt-s-1_42_0.xll` and `QuantLibXL-v143-mt-s-1_42_0.xll`),
 not the `v145` produced by a local VS 2026 build.
+
+The runner is pinned to `windows-2022` rather than `windows-latest` on purpose:
+`windows-latest` now maps to the VS 2026 (v145) image, and Boost 1.83's
+`bootstrap.bat` does not recognise the v145 toolset (it supports up to `vc143`),
+so building Boost there fails.  Matching the local `v145` output in CI would
+require a newer Boost and is left for a later iteration.
 
 The workflow is self-contained and needs no `CMakeUserPresets.json`.  Each
 matrix leg:
