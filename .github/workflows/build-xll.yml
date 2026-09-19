@@ -32,9 +32,18 @@ on:
           - both
           - x64
           - Win32
+      make_release:
+        description: "Publish the package zip as a GitHub Release"
+        required: true
+        type: boolean
+        default: false
+      release_tag:
+        description: "Tag for the GitHub Release (e.g. v1.42.0). Required when publishing."
+        required: false
+        default: "v1.42.0"
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   # Release/package version. Matches the version tag in the XLL file names.
@@ -247,3 +256,38 @@ jobs:
           name: QuantLibXL-${{ env.QLXL_VERSION }}
           path: dist/
           if-no-files-found: error
+
+      - name: Create release zip
+        if: ${{ inputs.make_release }}
+        shell: bash
+        run: |
+          if [ -z "${{ inputs.release_tag }}" ]; then
+            echo "release_tag must be set when make_release is true"; exit 1
+          fi
+          # A release should contain both architectures.
+          if [ "${{ inputs.arch }}" != "both" ]; then
+            echo "make_release requires arch=both so the package has both XLLs (got '${{ inputs.arch }}')"; exit 1
+          fi
+          zip_name="QuantLibXL-${QLXL_VERSION}.zip"
+          ( cd dist && zip -r "../${zip_name}" "QuantLibXL-${QLXL_VERSION}" )
+          echo "ZIP_NAME=${zip_name}" >> "$GITHUB_ENV"
+          echo "Created ${zip_name}:"
+          unzip -l "${zip_name}"
+
+      - name: Publish GitHub Release
+        if: ${{ inputs.make_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          name: QuantLibXL ${{ env.QLXL_VERSION }}
+          body: |
+            QuantLibXL ${{ env.QLXL_VERSION }} Excel add-ins (static-CRT Release, VS 2026 / v145)
+            built against QuantLib `${{ inputs.quantlib_ref }}` and Boost ${{ inputs.boost_version }}.
+
+            The attached `${{ env.ZIP_NAME }}` extracts to a `QuantLibXL-${{ env.QLXL_VERSION }}/`
+            folder containing:
+            - `Addins/` - the x64 and Win32 XLLs
+            - `Examples/` - up-to-date example spreadsheets
+          files: ${{ env.ZIP_NAME }}
+          draft: false
+          prerelease: false
