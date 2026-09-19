@@ -36,6 +36,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # Release/package version. Matches the version tag in the XLL file names.
+  QLXL_VERSION: "1.42.0"
+
 jobs:
   setup:
     # Build the matrix from the `arch` input so we can run only x64, only
@@ -202,4 +206,44 @@ jobs:
         with:
           name: QuantLibXL-${{ matrix.arch }}
           path: ${{ env.BUILD_DIR }}\xll\${{ matrix.xll_name }}
+          if-no-files-found: error
+
+  package:
+    # Bundle both XLLs and the up-to-date example spreadsheets into a single
+    # downloadable zip whose contents extract under a versioned root folder.
+    needs: build-xll
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout QuantLibAddin (for example spreadsheets)
+        uses: actions/checkout@v4
+
+      - name: Download built XLLs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: QuantLibXL-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Stage package contents
+        shell: bash
+        run: |
+          # Stage under a wrapper dir so upload-artifact keeps the versioned
+          # root folder inside the zip (it strips the common ancestor path).
+          root="dist/QuantLibXL-${QLXL_VERSION}"
+          mkdir -p "$root/Addins" "$root/Examples"
+          # XLLs (both x64 and Win32) land flat in the artifacts dir.
+          cp artifacts/*.xll "$root/Addins/"
+          cp "QuantLibXL/StandaloneExamples/Analytics/InterestRateDerivatives.xlsx" "$root/Examples/"
+          cp "QuantLibXL/StandaloneExamples/Analytics/YieldCurveBootstrapping.xlsx" "$root/Examples/"
+          echo "Package tree:"
+          find dist -type f
+
+      - name: Upload QuantLibXL package
+        uses: actions/upload-artifact@v4
+        with:
+          # The uploaded artifact is itself a zip. Pointing at the wrapper
+          # "dist" dir makes the QuantLibXL-<version>/ folder the extraction
+          # root inside the zip.
+          name: QuantLibXL-${{ env.QLXL_VERSION }}
+          path: dist/
           if-no-files-found: error
