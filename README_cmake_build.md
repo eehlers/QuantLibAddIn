@@ -445,26 +445,72 @@ A per-project `doxywarnings.txt` is written next to each `html` directory.
 ## 11  Continuous integration (GitHub Actions)
 
 The workflow `.github/workflows/build-xll.yml` builds the **static-CRT Release**
-XLL for **both x64 and Win32** on a GitHub-hosted `windows-latest` runner and
-uploads each XLL as a build artifact.
+XLL for **both x64 and Win32** on a GitHub-hosted `windows-latest` runner,
+bundles them with the example spreadsheets into a versioned package, and can
+optionally publish that package as a **GitHub Release**.
 
 | Property | Value |
 |----------|-------|
 | Trigger | `workflow_dispatch` (manual) only |
 | Runner | `windows-latest` (Visual Studio 2026, toolset **v145**) |
 | Variants | static-CRT Release, `x64` and `Win32` (matrix) |
-| Inputs | `quantlib_ref` (default `master`), `boost_version` (default `1.89.0`), `arch` (`both`/`x64`/`Win32`, default `both`) |
-| Output | artifacts `QuantLibXL-x64` and `QuantLibXL-Win32` |
+| Inputs | `quantlib_ref` (default `master`), `boost_version` (default `1.89.0`), `arch` (`both`/`x64`/`Win32`, default `both`), `make_release` (default `false`), `release_tag` (default `v1.42.0`) |
+| Output | per-arch XLL artifacts, a `QuantLibXL-<version>` package artifact, and (optionally) a GitHub Release |
 
 The runner uses VS 2026, so the CI XLLs are tagged `v145`
 (`QuantLibXL-v145-x64-mt-s-1_42_0.xll` and `QuantLibXL-v145-mt-s-1_42_0.xll`),
 matching a local VS 2026 build.
 
-`windows-latest` maps to the VS 2026 (v145) image.  Boost must therefore be new
-enough for its `bootstrap.bat`/`b2` to recognise the v145 toolset, so the
-`boost_version` input defaults to `1.89.0` (Boost 1.83's bootstrap only supports
-up to `vc143`).  The `b2` invocation uses `toolset=msvc`, letting Boost
-auto-detect the v145 compiler from the `vcvarsall` environment.
+### Building Boost under VS 2026 (v145)
+
+`windows-latest` maps to the VS 2026 (v145) image, which Boost 1.89's build
+tooling does not yet know about, so the workflow drives it explicitly:
+
+1. `bootstrap.bat msvc` builds the `b2` engine using `cl.exe` directly (its
+   auto-detection only recognises up to `vc143` and otherwise fails with
+   "Unknown toolset: vcunk").
+2. A generated `user-config.jam` registers the toolset under the **known**
+   version `14.3`, but points both the compiler path **and** the `<setup>`
+   script at the real v145 `cl.exe` and `vcvarsall.bat` (located via
+   `vswhere`).  Without the explicit `<setup>`, `b2` cannot build the
+   `msvc-setup` target and silently skips every object file.
+
+The resulting Boost libraries carry a `-vc143-` filename tag (a label only —
+they are genuinely compiled by the v145 compiler).  The XLL itself is compiled
+by CMake with the real v145 toolset, so the `v145` artifact name is accurate.
+
+### Package and release
+
+After both build legs succeed, a `package` job assembles a versioned tree and
+uploads it as the `QuantLibXL-<version>` artifact (itself a zip).  It extracts
+to a single rooted folder:
+
+```
+QuantLibXL-1.42.0/
+  Addins/     QuantLibXL-v145-x64-mt-s-1_42_0.xll, QuantLibXL-v145-mt-s-1_42_0.xll
+  Examples/   InterestRateDerivatives.xlsx, YieldCurveBootstrapping.xlsx
+```
+
+When the **`make_release`** input is checked, the same job zips that tree into
+`QuantLibXL-<version>.zip` and publishes a **GitHub Release** with
+`softprops/action-gh-release`.  The release step:
+
+- requires `arch=both` (so the package contains both XLLs) and a `release_tag`;
+- **creates the tag itself** from the commit the workflow ran on — you do not
+  push a tag manually;
+- attaches the zip as a publicly downloadable asset that never expires.
+
+Standard release flow: merge the CI branch into the default branch, then on
+**Actions → Build QuantLibXL XLL → Run workflow** choose **Use workflow from:
+`main`**, tick `make_release`, set `release_tag` (e.g. `v1.42.0`) and run.  The
+release is cut from `main`, and the tag marks the exact commit that produced the
+artifacts.  Re-running with the same tag updates the existing release.
+
+Publishing a release requires the workflow's `contents: write` permission (set
+in the workflow) and the repository's **Settings → Actions → General → Workflow
+permissions** to allow read/write.
+
+### Build steps
 
 The workflow is self-contained and needs no `CMakeUserPresets.json`.  Each
 matrix leg:
@@ -486,6 +532,6 @@ matrix leg:
    target in `Release`.
 4. **Verifies and uploads** the expected XLL, failing the job if it is missing.
 
-The workflow is being validated on `OpenSourceRisk/QuantLibAddIn`; the public
-release is intended to run unchanged on the personal fork
-`eehlers/QuantLibAddIn`.
+The public release is intended to run on the personal fork
+`eehlers/QuantLibAddIn`; the workflow also runs unchanged on
+`OpenSourceRisk/QuantLibAddIn`.
