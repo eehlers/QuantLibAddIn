@@ -239,9 +239,16 @@ jobs:
           # Stage under a wrapper dir so upload-artifact keeps the versioned
           # root folder inside the zip (it strips the common ancestor path).
           root="dist/QuantLibXL-${QLXL_VERSION}"
-          mkdir -p "$root/Addins" "$root/Examples"
-          # XLLs (both x64 and Win32) land flat in the artifacts dir.
-          cp artifacts/*.xll "$root/Addins/"
+          mkdir -p "$root/Addins/x64" "$root/Addins/Win32" "$root/Examples"
+          # Sort each XLL into an arch-specific subfolder so end users cannot
+          # accidentally load the wrong bitness. The x64 XLL name contains
+          # "-x64-"; the Win32 XLL does not.
+          for xll in artifacts/*.xll; do
+            case "$(basename "$xll")" in
+              *-x64-*) cp "$xll" "$root/Addins/x64/" ;;
+              *)       cp "$xll" "$root/Addins/Win32/" ;;
+            esac
+          done
           cp "QuantLibXL/StandaloneExamples/Analytics/InterestRateDerivatives.xlsx" "$root/Examples/"
           cp "QuantLibXL/StandaloneExamples/Analytics/YieldCurveBootstrapping.xlsx" "$root/Examples/"
           echo "Package tree:"
@@ -284,10 +291,16 @@ jobs:
             QuantLibXL ${{ env.QLXL_VERSION }} Excel add-ins (static-CRT Release, VS 2026 / v145)
             built against QuantLib `${{ inputs.quantlib_ref }}` and Boost ${{ inputs.boost_version }}.
 
-            The attached `${{ env.ZIP_NAME }}` extracts to a `QuantLibXL-${{ env.QLXL_VERSION }}/`
-            folder containing:
-            - `Addins/` - the x64 and Win32 XLLs
+            **Download `${{ env.ZIP_NAME }}`** below. (The "Source code (zip/tar.gz)"
+            entries are GitHub's automatically generated repository snapshots, not
+            the add-in package.)
+
+            It extracts to a `QuantLibXL-${{ env.QLXL_VERSION }}/` folder containing:
+            - `Addins/x64/` - the 64-bit XLL (load this in 64-bit Excel)
+            - `Addins/Win32/` - the 32-bit XLL (load this in 32-bit Excel)
             - `Examples/` - up-to-date example spreadsheets
+
+            Load only the XLL that matches your Excel bitness.
           files: ${{ env.ZIP_NAME }}
           draft: false
           prerelease: false

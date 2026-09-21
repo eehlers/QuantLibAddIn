@@ -487,9 +487,14 @@ to a single rooted folder:
 
 ```
 QuantLibXL-1.42.0/
-  Addins/     QuantLibXL-v145-x64-mt-s-1_42_0.xll, QuantLibXL-v145-mt-s-1_42_0.xll
-  Examples/   InterestRateDerivatives.xlsx, YieldCurveBootstrapping.xlsx
+  Addins/
+    x64/    QuantLibXL-v145-x64-mt-s-1_42_0.xll
+    Win32/  QuantLibXL-v145-mt-s-1_42_0.xll
+  Examples/ InterestRateDerivatives.xlsx, YieldCurveBootstrapping.xlsx
 ```
+
+The x64 and Win32 XLLs are placed in separate `Addins/` subfolders so end users
+must consciously pick the one matching their Excel bitness.
 
 When the **`make_release`** input is checked, the same job zips that tree into
 `QuantLibXL-<version>.zip` and publishes a **GitHub Release** with
@@ -516,11 +521,10 @@ The workflow is self-contained and needs no `CMakeUserPresets.json`.  Each
 matrix leg:
 
 1. **Clones QuantLib** from `https://github.com/<owner>/QuantLib` where
-   `<owner>` is the owner of the repository running the workflow — so
-   `OpenSourceRisk/QuantLibAddIn` clones `OpenSourceRisk/QuantLib` and
-   `eehlers/QuantLibAddIn` clones `eehlers/QuantLib`.  The sources are placed
-   in the camel-case `QuantLib\` folder the build expects (QuantLib is
-   `.gitignore`'d and never committed here).
+   `<owner>` is the owner of the repository running the workflow, so the
+   QuantLib fork is taken from the same owner as this repository.  The sources
+   are placed in the camel-case `QuantLib\` folder the build expects (QuantLib
+   is `.gitignore`'d and never committed here).
 2. **Builds Boost** (from source, only the required components, static runtime)
    for the leg's architecture — x64 staged to `boost\stage\lib`, Win32 staged
    to `boost\stage32\lib` and built from an x86 developer environment.  The
@@ -531,7 +535,3 @@ matrix leg:
    `BOOST_LIBRARYDIR` on the cmake command line, then builds the `QuantLibXL`
    target in `Release`.
 4. **Verifies and uploads** the expected XLL, failing the job if it is missing.
-
-The public release is intended to run on the personal fork
-`eehlers/QuantLibAddIn`; the workflow also runs unchanged on
-`OpenSourceRisk/QuantLibAddIn`.
