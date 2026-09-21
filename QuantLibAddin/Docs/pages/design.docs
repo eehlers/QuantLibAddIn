@@ -28,7 +28,9 @@
 <td><b>NB:</b> This document is out of date.  The %QuantLibAddin implementation
 still reflects the high-level ideas in this document but many of the details
 have changed.  For further information please refer to the %QuantLibAddin source
-code or send email to quantlib-users@lists.sf.net.</td>
+code or consult the
+<a href="https://www.quantlib.org/mailinglists.shtml">QuantLib mailing list</a>.
+</td>
 </tr>
 </table>
 

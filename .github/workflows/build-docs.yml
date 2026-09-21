@@ -1,0 +1,129 @@
+﻿name: Build QuantLibXL docs
+
+# Manually-triggered build of the HTML documentation (Doxygen) for the four
+# projects gensrc, ObjectHandler, QuantLibAddin and QuantLibXL, bundled into a
+# single downloadable zip.
+#
+# The docs need only Python 3, Doxygen and Graphviz (dot) - no C++ compiler and
+# no Boost - so each project's Docs/ directory is configured STANDALONE
+# (project(... NONE)).  That means QuantLib does NOT need to be cloned and the
+# whole C++ project is never configured; the build is fast and light.
+#
+# Each per-project docs target runs `gensrc.py -d` first (wired as a
+# prerequisite) to generate the Docs/auto.pages Doxygen input that Doxygen then
+# consumes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      make_release:
+        description: "Publish the docs zip as a GitHub Release asset"
+        required: true
+        type: boolean
+        default: false
+      release_tag:
+        description: "Tag of the GitHub Release to attach the docs zip to (e.g. v1.42.0). Required when publishing."
+        required: false
+        default: "v1.42.0"
+
+permissions:
+  contents: write
+
+env:
+  # Release/package version. Matches the version used by the XLL workflow.
+  QLXL_VERSION: "1.42.0"
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout QuantLibAddin
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Doxygen and Graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Build documentation (standalone per project)
+        shell: bash
+        run: |
+          set -e
+          # <project source Docs dir> : <staged lowercase folder> : <docs target>
+          # Each Docs/ dir is project(... NONE): no compiler, no Boost, no QuantLib.
+          build_one() {
+            local docs_dir="$1" out_name="$2" target="$3"
+            echo "::group::$target"
+            cmake -S "$docs_dir" -B "build/$out_name"
+            cmake --build "build/$out_name" --target "$target"
+            echo "::endgroup::"
+          }
+          build_one gensrc/Docs        gensrc        gensrc-docs
+          build_one ObjectHandler/Docs objecthandler ObjectHandler-docs
+          build_one QuantLibAddin/Docs quantlibaddin QuantLibAddin-docs
+          build_one QuantLibXL/Docs    quantlibxl    QuantLibXL-docs
+
+      - name: Stage docs package
+        shell: bash
+        run: |
+          set -e
+          # Stage under a wrapper dir so upload-artifact keeps the versioned
+          # root folder inside the zip (it strips the common ancestor path).
+          root="dist/QuantLibXL-docs-${QLXL_VERSION}"
+          # The Doxygen HTML for each project lands in
+          #   build/<out_name>/<Target>-docs/html
+          # (CMAKE_CURRENT_BINARY_DIR/<target>/html).  Copy each into a
+          # lowercase folder matching the target website path.
+          copy_html() {
+            local out_name="$1" target="$2"
+            local src="build/${out_name}/${target}/html"
+            if [ ! -d "$src" ]; then
+              echo "Expected HTML not found: $src"; find "build/${out_name}" -maxdepth 3 -type d; exit 1
+            fi
+            mkdir -p "$root/${out_name}"
+            cp -r "$src/." "$root/${out_name}/"
+          }
+          copy_html gensrc        gensrc-docs
+          copy_html objecthandler ObjectHandler-docs
+          copy_html quantlibaddin QuantLibAddin-docs
+          copy_html quantlibxl    QuantLibXL-docs
+          echo "Package tree (top level):"
+          find "$root" -maxdepth 2 -type d | sort
+          echo "index.html files:"
+          find "$root" -name index.html | sort
+
+      - name: Upload docs package
+        uses: actions/upload-artifact@v4
+        with:
+          # The uploaded artifact is itself a zip. Pointing at the wrapper
+          # "dist" dir makes the QuantLibXL-docs-<version>/ folder the
+          # extraction root inside the zip.
+          name: QuantLibXL-docs-${{ env.QLXL_VERSION }}
+          path: dist/
+          if-no-files-found: error
+
+      - name: Create release zip
+        if: ${{ inputs.make_release }}
+        shell: bash
+        run: |
+          set -e
+          if [ -z "${{ inputs.release_tag }}" ]; then
+            echo "release_tag must be set when make_release is true"; exit 1
+          fi
+          zip_name="QuantLibXL-docs-${QLXL_VERSION}.zip"
+          ( cd dist && zip -r "../${zip_name}" "QuantLibXL-docs-${QLXL_VERSION}" >/dev/null )
+          echo "ZIP_NAME=${zip_name}" >> "$GITHUB_ENV"
+          echo "Created ${zip_name}"
+
+      - name: Attach docs zip to GitHub Release
+        if: ${{ inputs.make_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          # Attach to the EXISTING release for this version (created by the XLL
+          # workflow); this adds the docs zip as an additional asset without
+          # touching the XLL zip.
+          tag_name: ${{ inputs.release_tag }}
+          files: ${{ env.ZIP_NAME }}

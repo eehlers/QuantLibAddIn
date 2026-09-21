@@ -26,8 +26,11 @@
 For a precompiled binary installation of the Excel addin, visit
 <a href="http://www.quantlibxl.org">http://www.quantlibxl.org</a>.
 
-For instructions on building various configurations from source code,
-visit \ref tutorials.
+To compile the code, clone the
+<a href="https://github.com/eehlers/QuantLibAddIn">repo</a>
+and follow the README.md.
+
+Legacy documentation regarding the build is available at \ref tutorials.
 
 */
 

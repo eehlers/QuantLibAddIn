@@ -18,16 +18,25 @@
 
 /*! \page build_calc Build %QuantLib Calc Addin on Windows and/or Linux
 
-<div align="center"><small><a href="tutorials.html">back to tutorials index</a></small></div> 
+<table border="1" bgcolor="lightsteelblue">
+<tr>
+<td><b>NB:</b> These pages may be out of date.  The project no longer provides
+source code tarballs / zip files.  To compile the code, clone the
+<a href="https://github.com/eehlers/QuantLibAddIn">repo</a>
+and follow the README.md.
+</td>
+</tr>
+</table>
 
 <table border="1" bgcolor="lightsteelblue">
 <tr>
 <td><b>NB:</b> For the current release of %QuantLibAddin 1.42.0, the
 LibreOffice build has not been updated.  The documentation on this page is out
-of date and relates to an older build of the LibreOffice addin.
-quantlib-users@lists.sf.net.</td>
+of date and relates to an older build of the LibreOffice addin.</td>
 </tr>
 </table>
+
+<div align="center"><small><a href="tutorials.html">back to tutorials index</a></small></div> 
 
 \section build_calc_overview Overview
 

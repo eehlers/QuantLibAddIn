@@ -18,6 +18,15 @@
 
 /*! \page tutorials Tutorials
 
+<table border="1" bgcolor="lightsteelblue">
+<tr>
+<td><b>NB:</b> These pages may be out of date.  The project no longer provides
+source code tarballs / zip files.  To compile the code, clone the
+<a href="https://github.com/eehlers/QuantLibAddIn">repo</a>
+and follow the README.md.</td>
+</tr>
+</table>
+
 Below is a list of tutorials relating to compilation of QuantLibAddin/QuantLibXL
 from source code.
 

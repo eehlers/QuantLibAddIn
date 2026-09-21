@@ -27,8 +27,8 @@
 
 \section inst_download Download
 
-Download gensrc from the 
-<a href="https://bintray.com/quantlib/releases/QuantLibXL/1.13#files">QuantLib downloads page on bintray</a>.
+gensrc is included in the
+<a href="https://github.com/eehlers/QuantLibAddIn">QuantLibAddin repo</a>.
 
 \section inst_installation Installation
 

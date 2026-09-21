@@ -23,7 +23,7 @@
 
 /*! \page history Version History
 
-<strong>Release 1.42 - MMM YYYY</strong>
+<strong>Release 1.42 - September 2026</strong>
 
 - Added a cmake build that sits alongside the existing build using the manually maintained Visual Studio solution files
 
