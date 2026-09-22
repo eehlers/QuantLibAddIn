@@ -12,13 +12,13 @@ https://www.quantlib.org/quantlibaddin
 https://www.quantlib.org/objecthandler  
 https://www.quantlib.org/gensrc
 
-Here are the instructions for downloading QuantLibXL:
+Compiled XLLs, example spreadsheets, and documentation are available for download at this link:
 
-https://www.quantlib.org/quantlibxl/installation.html
+https://github.com/eehlers/QuantLibAddIn/releases/tag/v1.42.0
 
-Here are the instructions for compiling QuantLibXL from source, using released source code:
+Below are instructions for building QuantLibXL (and other incarnations of QuantLibAddin) from source code.
 
-https://www.quantlib.org/quantlibaddin/build_qlxl.html
+NB: QuantLibAddin now depends not on the official QuantLib repo but on the OpenSourceRisk fork of QuantLib.
 
 ## Building from a git clone
 

@@ -44,8 +44,6 @@ Examples\YieldCurveBootstrapping.xlsx
 Examples\InterestRateDerivatives.xlsx
 \endverbatim
 \li Hit <tt>Ctrl-Alt-F9</tt> to force a full recalculation
-\li Please see also the other example workbooks in the <tt>StandaloneExamples</tt> directory.
-\li The help file is in the <tt>Docs</tt> directory.
 \li For further help, please use the mailing list: https://lists.sourceforge.net/lists/listinfo/quantlib-users
 
 */
