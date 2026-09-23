@@ -7,10 +7,10 @@ This repo contains source code and examples for the QuantLibXL, QuantLibAddin, O
 
 The four projects are documented at the links below:
 
-https://www.quantlibxl.org
-https://www.quantlibaddin.org
-https://www.objecthandler.org
-https://www.gensrc.org
+https://www.quantlibxl.org  
+https://www.quantlibaddin.org  
+https://www.objecthandler.org  
+https://www.gensrc.org  
 
 Compiled XLLs, example spreadsheets, and documentation are available for download at this link:
 
