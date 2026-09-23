@@ -7,10 +7,10 @@ This repo contains source code and examples for the QuantLibXL, QuantLibAddin, O
 
 The four projects are documented at the links below:
 
-https://www.quantlib.org/quantlibxl  
-https://www.quantlib.org/quantlibaddin  
-https://www.quantlib.org/objecthandler  
-https://www.quantlib.org/gensrc
+https://www.quantlibxl.org
+https://www.quantlibaddin.org
+https://www.objecthandler.org
+https://www.gensrc.org
 
 Compiled XLLs, example spreadsheets, and documentation are available for download at this link:
 
@@ -19,6 +19,13 @@ https://github.com/eehlers/QuantLibAddIn/releases/tag/v1.42.0
 Below are instructions for building QuantLibXL (and other incarnations of QuantLibAddin) from source code.
 
 NB: QuantLibAddin now depends not on the official QuantLib repo but on the OpenSourceRisk fork of QuantLib.
+
+## Building using GitHub Actions
+
+- Fork eehlers/QuantLib (NB: This is derived not from the official QuantLib repo but from the OpenSourceRisk fork of QuantLib)
+- Fork eehlers/QuantLibAddin
+- In your copy of QuantLibAddin, under Actions, run "Build QuantLibXL XLL"
+- If all goes well, the job should produce a zip file containing compiled XLLs and example spreadsheets
 
 ## Building from a git clone
 
