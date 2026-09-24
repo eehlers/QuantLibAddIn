@@ -176,7 +176,7 @@ for a Basic build.
 repository. Clone it:
 
 ```
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/QuantLibAddin.git
+git clone <repo-host>/<owner>/QuantLibAddIn.git
 ```
 
 QuantLib is maintained as a **separate** repository and is deliberately excluded
@@ -185,12 +185,14 @@ sub-folder named exactly `QuantLib` inside the working tree:
 
 ```
 cd QuantLibAddin
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/quantlib QuantLib
+git clone <repo-host>/<owner>/QuantLib QuantLib
 ```
 
 The folder name `QuantLib` **is case sensitive**. The explicit `QuantLib`
-argument at the end of the `git clone` command ensures the folder is named
-`QuantLib` (not `quantlib` from the URL).
+argument at the end of the `git clone` command ensures the sources land in a
+folder named exactly `QuantLib`, regardless of what the source repository is
+named (some hosts or forks name it differently, e.g. `quantlib` or
+`QuantLib-fork`).
 
 After this step you have, side by side under the repository root:
 

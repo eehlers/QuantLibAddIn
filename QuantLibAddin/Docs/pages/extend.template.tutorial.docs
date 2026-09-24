@@ -27,7 +27,7 @@
 <tr>
 <td><b>NB:</b> These pages may be out of date.  The project no longer provides
 source code tarballs / zip files.  To compile the code, clone the
-<a href="https://github.com/eehlers/QuantLibAddIn">repo</a>
+QuantLibAddin repository
 and follow the README.md.
 </td>
 </tr>

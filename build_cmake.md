@@ -194,7 +194,7 @@ QuantLibAddin\         (the repository root - the outer folder)
 this single repository. Clone it:
 
 ```
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/QuantLibAddin.git
+git clone <repo-host>/<owner>/QuantLibAddIn.git
 ```
 
 This creates the `QuantLibAddin` folder containing the four sub-projects above.
@@ -208,7 +208,7 @@ tree you just cloned:
 
 ```
 cd QuantLibAddin
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/quantlib QuantLib
+git clone <repo-host>/<owner>/QuantLib QuantLib
 ```
 
 The folder name `QuantLib` **is case sensitive** and must be spelled exactly as
@@ -216,7 +216,8 @@ shown - `QuantLib`, not `quantlib` or `QUANTLIB`, and with no version suffix -
 because the root `CMakeLists.txt` adds the sub-directory by that name with
 `add_subdirectory(QuantLib)`. The explicit `QuantLib` argument at the end of the
 `git clone` command ensures the folder is named `QuantLib` (without it git would
-create a folder named `quantlib` from the URL).
+create a folder whose name matches the source repository, for example
+`quantlib`, or another name if you are cloning a fork).
 
 After this step the layout in section 4 should be in place.
 

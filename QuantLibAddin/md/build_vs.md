@@ -132,7 +132,7 @@ QuantLibAddin\
 it:
 
 ```
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/QuantLibAddin.git
+git clone <repo-host>/<owner>/QuantLibAddIn.git
 ```
 
 This creates the `QuantLibAddin` folder containing the sub-projects above.
@@ -146,14 +146,15 @@ just cloned:
 
 ```
 cd QuantLibAddin
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/quantlib QuantLib
+git clone <repo-host>/<owner>/QuantLib QuantLib
 ```
 
 The folder name `QuantLib` **is case sensitive** and must be spelled exactly as
 shown - `QuantLib`, not `quantlib` or `QUANTLIB`, and with no version suffix -
 because the solution files reference `..\QuantLib` explicitly. Note that the
-`git clone` command above ends with an explicit `QuantLib` argument for this
-reason; without it git would create a folder named `quantlib` from the URL.
+`git clone` command above ends with an explicit `QuantLib` argument to ensure
+that the local directory is created with the correct name regardless of how
+the repo is called.
 
 After this step the layout in section 3 should be in place.
 

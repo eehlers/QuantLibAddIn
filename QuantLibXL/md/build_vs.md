@@ -128,7 +128,7 @@ QuantLibAddin\
 a single repository. Clone it:
 
 ```
-git clone https://github.com/eehlers/QuantLibAddIn
+git clone <repo-host>/<owner>/QuantLibAddIn
 ```
 
 This creates the `QuantLibAddin` folder containing the four sub-projects above.
@@ -142,7 +142,7 @@ tree you just cloned:
 
 ```
 cd QuantLibAddin
-git clone https://github.com/eehlers/QuantLib QuantLib
+git clone <repo-host>/<owner>/QuantLib QuantLib
 ```
 
 The folder name `QuantLib` **is case sensitive** and must be spelled exactly as

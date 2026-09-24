@@ -124,7 +124,7 @@ QuantLibAddin\
 `ObjectHandler` is contained in the main repository. Clone it:
 
 ```
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/QuantLibAddin.git
+git clone <repo-host>/<owner>/QuantLibAddIn.git
 ```
 
 This creates the `QuantLibAddin` folder containing `ObjectHandler` (among the

@@ -171,7 +171,7 @@ a sub-folder named exactly `QuantLib` inside the working tree:
 
 ```
 cd QuantLibAddin
-git clone <quantlib-repository-url> QuantLib
+git clone <repo-host>/<owner>/QuantLib QuantLib
 ```
 
 The folder name `QuantLib` **is case sensitive** and must be spelled exactly as

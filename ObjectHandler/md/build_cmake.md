@@ -139,7 +139,7 @@ to create the generated `ohxl` sources (section 2).
 `gensrc` build settings. Clone it:
 
 ```
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/QuantLibAddin.git
+git clone <repo-host>/<owner>/QuantLibAddIn.git
 ```
 
 This creates the `QuantLibAddin` folder (you may name the outer folder anything
