@@ -128,7 +128,7 @@ QuantLibAddin\
 a single repository. Clone it:
 
 ```
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/QuantLibAddin.git
+git clone https://github.com/eehlers/QuantLibAddIn
 ```
 
 This creates the `QuantLibAddin` folder containing the four sub-projects above.
@@ -142,14 +142,14 @@ tree you just cloned:
 
 ```
 cd QuantLibAddin
-git clone https://gitlab.dx1.lseg.com/app/app-51172/qs/quantlib QuantLib
+git clone https://github.com/eehlers/QuantLib QuantLib
 ```
 
 The folder name `QuantLib` **is case sensitive** and must be spelled exactly as
 shown - `QuantLib`, not `quantlib` or `QUANTLIB`, and with no version suffix -
-because the solution files reference `..\QuantLib` explicitly. Note that the
-`git clone` command above ends with an explicit `QuantLib` argument for this
-reason; without it git would create a folder named `quantlib` from the URL.
+because the solution files reference `..\QuantLib` explicitly.  So if you are
+cloning a repo named anything other than 'QuantLib', then you need that final
+argument in order to create the subdirectory name correctly.
 
 After this step the layout in section 3 should be in place.
 
