@@ -3,7 +3,7 @@
  Copyright (C) 2014 Eric Ehlers
 
  This file is part of QuantLib, a free-software/open-source library
- for financial quantitative analysts and developers - http://quantlib.org/
+ for financial quantitative analysts and developers - https://quantlib.org/
 
  QuantLib is free software developed by the QuantLib Group; you can
  redistribute it and/or modify it under the terms of the QuantLib License;
@@ -17,7 +17,7 @@
  You should have received a copy of the QuantLib License along with this
  program; if not, please email quantlib-dev@lists.sf.net
 
- The QuantLib License is also available at <http://quantlib.org/license.shtml>
+ The QuantLib License is also available at <https://quantlib.org/license.shtml>
  The members of the QuantLib Group are listed in the QuantLib License
 */
 
@@ -27,10 +27,10 @@ This site is intended for end users of the compiled QuantLibXL addin.
 
 If you want to recompile QuantLibXL yourself from source code or write
 new functions for the addin, please visit the parent site,
-<a href="http://www.quantlibaddin.org">QuantLibAddin</a>,
+<a href="https://www.quantlibaddin.org">QuantLibAddin</a>,
 in particular the following page:
 
-<a href="https://www.quantlib.org/quantlibaddin/installation.html">https://www.quantlib.org/quantlibaddin/installation.html</a>
+<a href="https://www.quantlib.org/quantlibaddin/tutorials.html">https://www.quantlib.org/quantlibaddin/tutorials.html</a>
 
 */
 
