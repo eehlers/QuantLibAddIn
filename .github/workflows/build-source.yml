@@ -72,18 +72,19 @@ jobs:
           root="dist/QuantLibAddin-${QLXL_VERSION}"
           mkdir -p "$root"
           # Copy the working tree into the staging root, excluding VCS metadata,
-          # the separate QuantLib clone and any build/IDE artifacts.
-          rsync -a \
-            --exclude '.git' \
-            --exclude 'dist' \
-            --exclude 'QuantLib' \
-            --exclude 'build' \
-            --exclude 'build*' \
-            --exclude 'out' \
-            --exclude '.vs' \
-            --exclude '__pycache__' \
-            --exclude '*.pyc' \
-            ./ "$root/"
+          # the separate QuantLib clone and any build/IDE artifacts.  rsync is
+          # not available on windows-latest (Git Bash), so use tar, which is.
+          tar \
+            --exclude='./.git' \
+            --exclude='./dist' \
+            --exclude='./QuantLib' \
+            --exclude='./build' \
+            --exclude='./build*' \
+            --exclude='./out' \
+            --exclude='./.vs' \
+            --exclude='__pycache__' \
+            --exclude='*.pyc' \
+            -cf - . | tar -xf - -C "$root"
           echo "Staged top-level entries:"
           ls -a "$root"
 
