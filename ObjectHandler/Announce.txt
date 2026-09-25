@@ -6,7 +6,7 @@ interrogated, and destroyed.
 
 ObjectHandler shares the QuantLib project structure with regard to distribution, 
 licensing, etc., all of which is documented on the main QuantLib website:
-http://quantlib.org
+https://www.quantlib.org
 
 Version 0.1.4 has been released and is available for download at
 http://sourceforge.net/project/showfiles.php?group_id=12740

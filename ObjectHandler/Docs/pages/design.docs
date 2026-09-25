@@ -3,7 +3,7 @@
  Copyright (C) 2005, 2006 Eric Ehlers
 
  This file is part of QuantLib, a free-software/open-source library
- for financial quantitative analysts and developers - http://quantlib.org/
+ for financial quantitative analysts and developers - https://www.quantlib.org/
 
  QuantLib is free software developed by the QuantLib Group; you can
  redistribute it and/or modify it under the terms of the QuantLib License;
@@ -17,7 +17,7 @@
  You should have received a copy of the QuantLib License along with this
  program; if not, please email quantlib-dev@lists.sf.net
 
- The QuantLib License is also available at <http://quantlib.org/license.shtml>
+ The QuantLib License is also available at <https://www.quantlib.org/license.shtml>
  The members of the QuantLib Group are listed in the QuantLib License
 */
 
@@ -122,7 +122,7 @@ The client application makes calls to the Factory function in order to instantia
 Class <tt>Object</tt> supports interfaces for high- and low-level interrogation.  For expediency, the return value of function \c makeObject is the Property vector of the corresponding <tt>Object</tt>.  Rather than interrogate a newly constructed <tt>Object</tt>, the client application can simply grab the Property vector from the return value of the factory function.  For example, in a spreadsheet, a formula array invokes the factory function which instantiates an <tt>Object</tt> in %ObjectHandler, and the return value of the factory function - attributes of the <tt>Object</tt> - are displayed across a range of cells in the spreadsheet.
 \section sec_2 2 Implementation
 \par
-Pseudocode is provided for %ObjectHandler and for an example Client application. A complete copy of the latest code can be checked out from the <a href="http://quantlib.org/cvs.shtml">QuantLib CVS</a> (module %ObjectHandler), or browsed <a href="http://cvs.sourceforge.net/viewcvs.py/quantlib/ObjectHandler/">on line</a>.
+Pseudocode is provided for %ObjectHandler and for an example Client application. A complete copy of the latest code can be checked out from the <a href="https://www.quantlib.org/cvs.shtml">QuantLib CVS</a> (module %ObjectHandler), or browsed <a href="http://cvs.sourceforge.net/viewcvs.py/quantlib/ObjectHandler/">on line</a>.
 \section sec_2_1 2.1 ObjectHandler
 \section sec_2_1_1 2.1.1 Object
 \par object.hpp
