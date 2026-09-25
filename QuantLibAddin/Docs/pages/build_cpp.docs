@@ -49,6 +49,7 @@ separately and must be downloaded alongside them.
 <dt>\ref build_cpp_vs</dt>
 <dd><dl>
 <dt>\ref build_cpp_vs_download</dt>
+<dt>\ref build_cpp_vs_boostprops</dt>
 <dt>\ref build_cpp_vs_build</dt>
 <dt>\ref build_cpp_vs_test</dt>
 <dt>\ref build_cpp_vs_usage</dt>
@@ -119,9 +120,12 @@ version number (e.g.  \c %QuantLib not \c QuantLib-1.42.0).  The combined archiv
 already contains gensrc, ObjectHandler and %QuantLibAddin in the correct layout,
 so you only need to add %QuantLib alongside them.
 
-Create a new empty folder on your hard drive to serve as the root directory for
-the build.  You can use any path; for purposes of this tutorial the build
-directory is <tt>C:\\QuantLibAddin-1.42.0</tt>.  After unpacking (below) you should
+Choose a parent directory on your hard drive under which the build tree will
+live.  You can use any path; for purposes of this tutorial the parent directory
+is <tt>C:\\</tt>, so the build root becomes <tt>C:\\QuantLibAddin-1.42.0</tt>.
+The archive already includes the <tt>QuantLibAddin-1.42.0</tt> folder, so you
+uncompress it <i>into the parent</i> rather than into a folder that is itself
+named <tt>QuantLibAddin-1.42.0</tt>.  After unpacking (below) you should
 have the following directory structure:
 \verbatim
 C:\QuantLibAddin-1.42.0\gensrc
@@ -136,10 +140,12 @@ Download the combined source-code archive from:
 
 https://github.com/eehlers/QuantLibAddIn/releases/tag/v1.42.0
 
-and uncompress it to <tt>C:\\QuantLibAddin-1.42.0</tt>.  This single archive contains
-gensrc, ObjectHandler and %QuantLibAddin, already laid out side by side under a
-top-level <tt>QuantLibAddin-1.42.0</tt> folder; no separate per-project download of
-those projects is required.
+The archive already contains a single top-level <tt>QuantLibAddin-1.42.0</tt>
+folder holding gensrc, ObjectHandler and %QuantLibAddin side by side, so
+uncompress it into the <i>parent</i> directory (e.g. <tt>C:\\</tt>) to obtain
+<tt>C:\\QuantLibAddin-1.42.0</tt>; do not uncompress it into a folder that is
+itself named <tt>QuantLibAddin-1.42.0</tt> or the projects will end up
+double-nested.  No separate per-project download of those projects is required.
 
 Download a copy of the source code for the OpenSourceRisk fork of QuantLib.
 At the time of this writing, that code has not been packaged for version 1.42.0.
@@ -151,7 +157,56 @@ Download it alongside the bundled
 projects, renaming the target directory to
 <tt>C:\\QuantLibAddin-1.42.0\\%QuantLib</tt>.
 
-\subsection build_cpp_vs_build 2.2 Build
+\subsection build_cpp_vs_boostprops 2.2 Configure Boost
+
+The Visual Studio projects locate Boost through two property sheets that are
+<b>not</b> part of the source archive (they contain machine-specific paths), so
+you must create them by hand before building.
+
+First create <tt>ObjectHandler\\boost.props</tt> - used by ObjectHandler and
+%QuantLibAddin - adjusting the paths to your Boost build:
+\verbatim
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\path\to\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
+    <Link>
+      <AdditionalLibraryDirectories>C:\path\to\boost\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+    <Link>
+      <AdditionalLibraryDirectories>C:\path\to\boost\stage32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>
+\endverbatim
+
+The %QuantLib project uses its own pair of sheets under <tt>%QuantLib\\MSVC</tt>,
+which are likewise absent (they are imported unconditionally, so both must
+exist).  Create the <tt>%QuantLib\\MSVC</tt> folder and add
+<tt>quantlib.x64.user.props</tt> (used for both x64 configurations):
+\verbatim
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IncludePath>C:\path\to\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\path\to\boost\stage\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+</Project>
+\endverbatim
+and <tt>quantlib.Win32.user.props</tt> (used for both Win32 configurations -
+point <tt>LibraryPath</tt> at your 32-bit Boost libraries).  Even if you build
+x64 only, create <tt>quantlib.Win32.user.props</tt> too (with any valid
+content), otherwise the build stops immediately with
+<tt>error MSB4019: The imported project "...\\%QuantLib\\MSVC\\quantlib.x64.user.props" was not found</tt>.
+
+\subsection build_cpp_vs_build 2.3 Build
 
 A single solution file, <tt>%QuantLibAddin\\QuantLibAddin.sln</tt>, is provided.
 The platform toolset is selected automatically from the version of Visual Studio
@@ -161,7 +216,7 @@ there is no longer a separate solution file per compiler version.
 Open the solution, choose configuration <tt>Release (static runtime)</tt> and
 platform <tt>x64</tt>, and execute menu item <tt>Build | Build Solution</tt>.
 
-\subsection build_cpp_vs_test 2.3 Test
+\subsection build_cpp_vs_test 2.4 Test
 
 Open a DOS prompt in directory
 \verbatim
@@ -178,16 +233,16 @@ option PV = 3.84431
 End example program.
 \endverbatim
 
-\subsection build_cpp_vs_usage 2.4 Usage
+\subsection build_cpp_vs_usage 2.5 Usage
 
-\subsubsection build_cpp_vs_include 2.4.1 #include
+\subsubsection build_cpp_vs_include 2.5.1 #include
 
 Add the following directive to your project's source file:
 \verbatim
 #include <qlo/qladdin.hpp>
 \endverbatim
 
-\subsubsection build_cpp_vs_link 2.4.2 Link
+\subsubsection build_cpp_vs_link 2.5.2 Link
 
 Your project's link to the %QuantLibAddin library is established automatically
 by the directive
@@ -234,7 +289,10 @@ https://github.com/eehlers/QuantLibAddIn/releases/tag/v1.42.0
 
 and uncompress it under <tt>/home/username/build</tt>.  This single archive
 contains gensrc, ObjectHandler and %QuantLibAddin, already laid out side by side
-under a top-level <tt>%QuantLibAddin-1.42.0</tt> folder.
+under a top-level <tt>%QuantLibAddin-1.42.0</tt> folder, so unpack it into
+<tt>/home/username/build</tt> itself (not into a subfolder already named
+<tt>QuantLibAddin-1.42.0</tt>) to obtain
+<tt>/home/username/build/QuantLibAddin-1.42.0</tt>.
 
 Download a copy of the source code for the OpenSourceRisk fork of QuantLib.
 At the time of this writing, that code has not been packaged for version 1.42.0.
@@ -256,16 +314,28 @@ After unpacking you will have, among others:
 
 \subsection build_cpp_cmake_build 3.2 Build
 
-The cmake build is driven by presets.  The example below uses the Linux preset
-<tt>linux-gcc</tt>; on Windows you would select one of the <tt>windows-...</tt>
-presets instead (e.g. <tt>windows-vs2026-x64-static</tt>).  The
+The cmake build on Linux is driven by the preset <tt>linux-gcc</tt> (run
+<tt>cmake --list-presets</tt> to confirm it is available on your platform).  The
 <tt>-DRUN_GENSRC=ON</tt> option runs gensrc (a Python 3 script) to regenerate the
 auto-generated source code; it is required for the first build from a fresh
 release.
 
+On Windows there is no ready-made preset to select (the <tt>windows-...</tt>
+entries in <tt>CMakePresets.json</tt> are hidden base presets, not directly
+selectable), so drive the build with an explicit generator instead, for example:
+\verbatim
+cmake -S . -B build\windows-x64 -G "Visual Studio 18 2026" -A x64 ^
+    -DRUN_GENSRC=ON ^
+    -DBoost_USE_STATIC_RUNTIME=ON -DMSVC_LINK_DYNAMIC_RUNTIME=OFF ^
+    -DBOOST_INCLUDEDIR=C:\path\to\boost -DBOOST_LIBRARYDIR=C:\path\to\boost\stage\lib ^
+    -DCMAKE_PREFIX_PATH="..\QuantLib\build\windows-x64;..\ObjectHandler\build\windows-x64"
+cmake --build build\windows-x64 --config Release --target QLADemo
+\endverbatim
+
 Build the prerequisites %QuantLib and ObjectHandler first, then configure and
 build the %QuantLibAddin wrapper library and the C++ demo client
-(<tt>QLADemo</tt>), telling cmake where the prerequisite build trees are:
+(<tt>QLADemo</tt>), telling cmake where the prerequisite build trees are.  The
+Linux commands are:
 
 \verbatim
 cd /home/username/build/QuantLibAddin-1.42.0/QuantLibAddin

@@ -130,11 +130,13 @@ projects must reside side by side in the directory tree.  The single source-code
 archive already contains them in the correct layout, so you only need to unpack
 it.
 
-Create a new empty folder on your hard drive to serve as the root directory for
-the build.  You can use any path; for purposes of this tutorial the build
-directory is <tt>C:\\QuantLibAddin-1.42.0</tt>.  Unpack the source-code archive into
-that directory.  The archive expands to a single top-level <tt>QuantLibAddin</tt>
-folder containing all of the projects, so after unpacking you should have at
+Choose a parent directory on your hard drive under which the build tree will
+live.  You can use any path; for purposes of this tutorial the parent directory
+is <tt>C:\\</tt>, so the build root becomes <tt>C:\\QuantLibAddin-1.42.0</tt>.
+The archive already expands to a single top-level <tt>QuantLibAddin-1.42.0</tt>
+folder containing all of the projects, so unpack it <i>into the parent</i>
+(e.g. <tt>C:\\</tt>), not into a folder that is itself named
+<tt>QuantLibAddin-1.42.0</tt>.  After unpacking you should have at
 least the following directory structure (the archive also contains the other
 projects in the distribution):
 \verbatim
@@ -148,7 +150,8 @@ Download the source-code distribution archive from:
 
 https://github.com/eehlers/QuantLibAddIn/releases/tag/v1.42.0
 
-and uncompress it to <tt>C:\\QuantLibAddin-1.42.0</tt>.  This single archive contains
+and uncompress it into the <i>parent</i> directory (e.g. <tt>C:\\</tt>) to obtain
+<tt>C:\\QuantLibAddin-1.42.0</tt>.  This single archive contains
 gensrc, %ObjectHandler and the other projects in the distribution; no separate
 per-project download is required.
 

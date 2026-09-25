@@ -1,0 +1,9 @@
+include(CMakeFindDependencyMacro)
+
+# ObjectHandler's public headers include Boost, and (on Windows) ohxllib links
+# Boost.serialization.  Re-find Boost so a downstream standalone build that
+# consumes ObjectHandler via find_package(ObjectHandler CONFIG) resolves the
+# same dependency.
+find_dependency(Boost)
+
+include("${CMAKE_CURRENT_LIST_DIR}/ObjectHandlerTargets.cmake")

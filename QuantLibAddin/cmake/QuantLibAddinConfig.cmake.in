@@ -1,0 +1,9 @@
+include(CMakeFindDependencyMacro)
+
+# QuantLibObjects links the upstream QuantLib::QuantLib and ObjectHandler::ohlib
+# imported targets, so a downstream standalone build that consumes QuantLibAddin
+# via find_package(QuantLibAddin CONFIG) must re-find those upstream packages.
+find_dependency(QuantLib CONFIG)
+find_dependency(ObjectHandler CONFIG)
+
+include("${CMAKE_CURRENT_LIST_DIR}/QuantLibAddinTargets.cmake")
