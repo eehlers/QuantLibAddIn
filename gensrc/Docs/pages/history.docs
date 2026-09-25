@@ -27,7 +27,9 @@
 
 - Added a cmake build that sits alongside the existing build using the manually maintained Visual Studio solution files
 
-- Made the cmake build of the C++ addin work on Linux with gcc: portable WIN32/MSVC guards, gensrc moved into its own gensrc/CMakeLists.txt (optional QLA_RUN_GENSRC step), and a native linux-gcc preset
+- Made the cmake build of the C++ addin work on Linux with gcc: portable
+  WIN32/MSVC guards, gensrc moved into its own gensrc/CMakeLists.txt (optional
+  QLA_RUN_GENSRC step), and a native linux-gcc preset
 
 - Serialization addin: skip creator/factory/register generation for constructors
   where the Cpp platform is suppressed, allowing gensrc metadata to drive

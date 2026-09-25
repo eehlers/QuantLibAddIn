@@ -25,18 +25,31 @@
 
 <strong>Release 1.42 - September 2026</strong>
 
-- Added a cmake build that sits alongside the existing build using the manually maintained Visual Studio solution files
+- Added qlRiskyBondEngine pricing engine, qlFraAmount FRA payoff function, and renamed qlFRAforwardRate
+  to qlFraForwardRate; removed qlFixedRateBond2: deleted the QuantLibAddin wrapper constructor that accepted
+  a vector of InterestRate objects as coupons, on the grounds that the same bond can be constructed via the
+  simpler qlFixedRateBond interface which takes raw Rate values and a DayCounter directly (thanks to Francois Botha)
 
-- Made the cmake build of the C++ addin work on Linux with gcc: portable WIN32/MSVC guards, gensrc moved into its own gensrc/CMakeLists.txt (optional QLA_RUN_GENSRC step), and a native linux-gcc preset
+- Added new ratehelpers and updated example sheet (thanks to Sebastian Schlenkrich)
+
+- Added FX forward instrument and DiscountingFxForwardEngine (thanks to Mike Scaturo)
+
+- Added a cmake build that sits alongside the existing build using the manually
+  maintained Visual Studio solution files
+
+- Made the cmake build of the C++ addin work on Linux with gcc: portable
+  WIN32/MSVC guards, gensrc moved into its own gensrc/CMakeLists.txt (optional
+  QLA_RUN_GENSRC step), and a native linux-gcc preset
 
 - Reenabled the C++ addin.  In the visual studio build, the build of the C++
   addin was still working.  Fixed a problem where the build would fail if
   doxygen were not installed.  Extended the cmake build to support the build of
   the C++ addin.
 
-- Added FX forward instrument and DiscountingFxForwardEngine (thanks to Mike Scaturo)
+- Upgraded project files to VS2026 (v145 toolset)
 
-- Added new ratehelpers and updated example sheet (thanks to Sebastian Schlenkrich)
+- Visual Studio project files: Redirect Debug PDB output to OutDir to avoid
+  mspdbsrv post-build copy lock
 
 - Updated for compatibility with the ORE fork of QuantLib:
 
@@ -77,15 +90,6 @@
 
   - swaptionvolstructure.cpp, dividendvanillaoption.cpp, credit.cpp: updated for
     renamed/removed QuantLib classes
-
-- Upgraded project files to VS2026 (v145 toolset)
-
-- Visual Studio project files: Redirect Debug PDB output to OutDir to avoid mspdbsrv post-build copy lock
-
-- Added qlRiskyBondEngine pricing engine, qlFraAmount FRA payoff function, and renamed qlFRAforwardRate
-  to qlFraForwardRate; removed qlFixedRateBond2: deleted the QuantLibAddin wrapper constructor that accepted
-  a vector of InterestRate objects as coupons, on the grounds that the same bond can be constructed via the
-  simpler qlFixedRateBond interface which takes raw Rate values and a DayCounter directly (thanks to Francois Botha)
 
 <strong>Release 1.22.0 - May 2021</strong>
 
